@@ -41,18 +41,8 @@ export function TemplateLogin() {
             <motion.div 
                 className={styles.templateLogin} 
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }} 
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.2,
-                  ease: [0, 0.71, 0.2, 1.01],
-                  scale: {
-                    type: "spring",
-                    damping: 5,
-                    stiffness: 100,
-                    restDelta: 0.001
-                  }
-                }}
+                initial={{ y: -500, rotateY: 100 }}
+                animate={{ y: 0, rotateY: 0, transition: { duration: 0.7 } }}
             >
                 <h3 id={styles.titleTemplate}>Seja bem-vindo!</h3>
                 <form id={styles.formGroup}>

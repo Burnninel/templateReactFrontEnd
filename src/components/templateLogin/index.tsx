@@ -46,12 +46,6 @@ export function TemplateLogin() {
                         pw: valuePw,
                     }),
                 });
-                // const data = JSON.stringify({
-                //     email: valueEmail,
-                //     pw: valuePw,
-                // })
-
-                // const response = await axios.post('http://localhost:4000', data)
 
                 if (response.ok) {
                     console.log('Comeu todas')

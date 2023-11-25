@@ -1,18 +1,19 @@
 import { motion } from "framer-motion";
-import { useState } from 'react'
+import { useState, ChangeEvent } from 'react'
+import axios from "axios";
 
 import styles from './styles.module.scss'
 
 export function TemplateLogin() {
-    const [valueEmail, setValorEmail] = useState('');
-    const [valuePw, setValorPw] = useState('');
+    const [valueEmail, setValorEmail] = useState<string>('')
+    const [valuePw, setValorPw] = useState<string>('')
 
-    const [errorEmail, setErrorEmail] = useState(false);
-    const [errorPw, setErrorPw] = useState(false);
+    const [errorEmail, setErrorEmail] = useState<boolean>(false)
+    const [errorPw, setErrorPw] = useState<boolean>(false)
 
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
-    const handleEmailChange = (event: any) => {
+    const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValorEmail(event.target.value)
         
         if (isSubmitted) {
@@ -20,7 +21,7 @@ export function TemplateLogin() {
         }
     };
 
-    const handlePwChange = (event: any) => {
+    const handlePwChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValorPw(event.target.value)
 
         if (isSubmitted) {
@@ -28,10 +29,39 @@ export function TemplateLogin() {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setIsSubmitted(true);
         setErrorEmail(!valueEmail);
         setErrorPw(!valuePw);
+
+        if (!errorEmail && !errorPw) {
+            try {
+                const response = await fetch('http://localhost:4000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: valueEmail,
+                        pw: valuePw,
+                    }),
+                });
+                // const data = JSON.stringify({
+                //     email: valueEmail,
+                //     pw: valuePw,
+                // })
+
+                // const response = await axios.post('http://localhost:4000', data)
+
+                if (response.ok) {
+                    console.log('Comeu todas')
+                } else {
+                    console.log('Se fodeu')
+                }
+            } catch (error) {
+                console.error('Erro ao enviar dados para o backend:', error)
+            }
+        }
     }
 
     const handleCreateAccount = () => { window.location.href =  'http://localhost:5173/createAccount'}

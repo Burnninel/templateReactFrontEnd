@@ -36,18 +36,12 @@ export function TemplateLogin() {
 
         if (!errorEmail && !errorPw) {
             try {
-                const response = await fetch('http://localhost:4000/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: valueEmail,
-                        pw: valuePw,
-                    }),
+                const response = await axios.post('http://localhost:4000/login', {
+                    email: valueEmail,
+                    pw: valuePw,
                 });
-
-                if (response.ok) {
+         
+                if (response.status === 200) {
                     console.log('Comeu todas')
                 } else {
                     console.log('Se fodeu')
@@ -55,7 +49,7 @@ export function TemplateLogin() {
             } catch (error) {
                 console.error('Erro ao enviar dados para o backend:', error)
             }
-        }
+         }
     }
 
     const handleCreateAccount = () => { window.location.href =  'http://localhost:5173/createAccount'}

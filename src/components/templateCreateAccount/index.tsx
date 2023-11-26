@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from 'react'
+import axios from "axios";
 
 import styles from './styles.module.scss'
 
@@ -10,6 +11,7 @@ export function TemplateCreateAccount() {
 
     const [valueEmail, setValueEmail] = useState('');
     const [errorEmail, setErrorEmail] = useState(false);
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     const [valueProfession, setValueProfession] = useState('');
     const [errorProfession, setErrorProfession] = useState(false);
@@ -31,7 +33,7 @@ export function TemplateCreateAccount() {
         setValueEmail(event.target.value)
 
         if (isSubmitted) {
-            setErrorEmail(!event.target.value)
+            setErrorEmail(!event.target.value || !emailRegex.test(valueEmail))
         }
     }
 
@@ -51,12 +53,36 @@ export function TemplateCreateAccount() {
         }
     }
 
-    const handleCreateAccount = () => {
+    const handleCreateAccount = async () => {
         setIsSubmitted(true)
-        setErrorName(!valueName);
-        setErrorEmail(!valueName);
-        setErrorProfession(!valueName);
-        setErrorPw(!valueName);
+        setErrorName(!valueName)
+        setErrorEmail(!valueEmail || !emailRegex.test(valueEmail));
+        setErrorProfession(!valueProfession);
+        setErrorPw(!valuePw);
+
+        if (!valueName || !emailRegex.test(valueEmail) || !valueProfession || !valuePw ) {
+            return false
+        }
+
+        try {
+            const response = await axios.post('http://localhost:4000/createAccount', {
+                name: valueName,
+                profession: valueEmail,
+                email: valueEmail,
+                pw: valuePw,
+            });
+            
+            if (response.status === 200) {
+                console.log('Conexão ok!')
+            } else {
+                console.log('Erro de comunicação com o Banco!')
+            }
+
+        } catch (error) {
+            console.error('Erro ao enviar dados para o backend:', error)
+        }
+        
+        console.log('cadastrado!')
     }
 
     return (

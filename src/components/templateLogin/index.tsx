@@ -49,7 +49,7 @@ export function TemplateLogin() {
             } catch (error) {
                 console.error('Erro ao enviar dados para o backend:', error)
             }
-         }
+        }
     }
 
     const handleCreateAccount = () => { window.location.href =  'http://localhost:5173/createAccount'}

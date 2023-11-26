@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from "axios";
 
 import styles from './styles.module.scss'
+import { redirect } from "next/dist/server/api-utils";
 
 export function TemplateCreateAccount() {
 
@@ -85,11 +86,13 @@ export function TemplateCreateAccount() {
         window.location.href = '/'
     }
 
+    const redirectToLogin = () => { window.location.href = '/'}
+
     return (
         <div className={styles.exampleContainer}>
             <motion.div
                 className={styles.templateLogin}
-                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 1 }}
                 initial={{ y: -500, rotateY: 100 }}
                 animate={{ y: 0, rotateY: 0, transition: { duration: 0.7 } }}
             >
@@ -137,7 +140,7 @@ export function TemplateCreateAccount() {
                     </div>
                     <button className={styles.handleForm} type="button" onClick={handleCreateAccount}>Entrar</button>
                 </form>
-                <p className={styles.textRegister}>Já tem um conta?</p>
+                <div className={styles.textAlreadyRegistred} onClick={redirectToLogin}>Já tem um conta?</div>
             </motion.div>
         </div>
     )

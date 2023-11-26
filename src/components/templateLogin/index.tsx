@@ -52,7 +52,7 @@ export function TemplateLogin() {
         <div className={styles.exampleContainer}>
             <motion.div
                 className={styles.templateLogin}
-                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 1 }}
                 initial={{ y: -500, rotateY: 100 }}
                 animate={{ y: 0, rotateY: 0, transition: { duration: 0.7 } }}
             >

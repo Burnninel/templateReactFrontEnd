@@ -46,7 +46,7 @@ export function TemplateLogin() {
         }
     }
 
-    const handleCreateAccount = () => { window.location.href = 'http://localhost:5173/createAccount' }
+    const redirectToCreateAccount = () => { window.location.href = 'http://localhost:5173/createAccount' }
 
     return (
         <div className={styles.exampleContainer}>
@@ -80,7 +80,7 @@ export function TemplateLogin() {
                     </div>
                     <button onClick={handleSubmit} className={styles.handleForm} type="button">Entrar</button>
                 </form>
-                <p className={styles.textRegister}>Não tem uma conta? <div className={styles.btnRegister} onClick={handleCreateAccount}>Registrar-se</div></p>
+                <p className={styles.textRegister}>Não tem uma conta? <div className={styles.btnRegister} onClick={redirectToCreateAccount}>Registrar-se</div></p>
             </motion.div>
         </div>
     )

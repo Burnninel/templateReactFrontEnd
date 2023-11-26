@@ -82,7 +82,7 @@ export function TemplateCreateAccount() {
             console.error('Erro ao enviar dados para o backend:', error)
         }
         
-        console.log('cadastrado!')
+        window.location.href = '/'
     }
 
     return (

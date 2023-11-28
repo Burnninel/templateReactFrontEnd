@@ -27,7 +27,6 @@ export function TemplateAccount() {
 
     axios.get('http://localhost:4000/account', config)
       .then(response => {
-        console.log(response.data)
         setUserData(response.data)
       })
       .catch(error => {

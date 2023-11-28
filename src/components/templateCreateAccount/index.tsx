@@ -3,7 +3,6 @@ import { useState } from 'react'
 import axios from "axios";
 
 import styles from './styles.module.scss'
-import { redirect } from "next/dist/server/api-utils";
 
 export function TemplateCreateAccount() {
 
@@ -68,7 +67,7 @@ export function TemplateCreateAccount() {
         try {
             const response = await axios.post('http://localhost:4000/createAccount', {
                 name: valueName,
-                profession: valueEmail,
+                profession: valueProfession,
                 email: valueEmail,
                 pw: valuePw,
             });

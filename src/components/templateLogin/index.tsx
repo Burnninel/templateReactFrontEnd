@@ -32,8 +32,8 @@ export function TemplateLogin() {
                 email: valueEmail,
                 pw: valuePw,
             })
-
             if (response.status === 200) {
+                localStorage.setItem('token', response.data)
                 window.location.href = '/account'
                 console.log('Login successful!')
             } else {
@@ -46,7 +46,7 @@ export function TemplateLogin() {
         }
     }
 
-    const redirectToCreateAccount = () => { window.location.href = 'http://localhost:5173/createAccount' }
+    const redirectToCreateAccount = () => { window.location.href = '/createAccount' }
 
     return (
         <div className={styles.exampleContainer}>

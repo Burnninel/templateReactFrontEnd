@@ -1,0 +1,20 @@
+$whiteColor: #fff;
+$elementsForm: #ede9e9;
+$colorInput: #565050;
+$colorError: #d70b0b;
+
+.exampleContainer .templateAccount {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 30px;
+    width: 360px;
+    padding: 24px 32px;
+}
+
+#titleCreateAccount {
+    font-size: 22px;
+    margin-bottom: 10px;
+}

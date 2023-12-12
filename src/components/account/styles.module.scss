@@ -1,20 +1,134 @@
-$whiteColor: #fff;
-$elementsForm: #ede9e9;
+$blackColor: #141414;
+$whiteColor: #ffffffd0;
+$gradient: linear-gradient(180deg, #00b4c5 0%, rgb(16, 236, 199) 100%);
 $colorInput: #565050;
 $colorError: #d70b0b;
 
-.exampleContainer .templateAccount {
+
+.template .templateAccount {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background: #fff;
+    flex-direction: row;
+    background: $whiteColor;
+    user-select: none;
+    outline: none;
     border-radius: 30px;
-    width: 360px;
     padding: 24px 32px;
 }
 
-#titleCreateAccount {
-    font-size: 22px;
-    margin-bottom: 10px;
+.leftProfile {
+    width: 265px;
+
+    .photoProfile {
+        display: flex;
+        background: $gradient;
+        border-radius: 100%;
+        padding: 4px;
+        height: 220px;
+        width: 220px;
+
+        img {
+            height: 100%;
+            width: 100%;
+            border-radius: 100%;
+            object-fit: cover;
+        }
+    }
+}
+
+.rightProfile {
+    width: 260px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 16px 0px;
+    user-select: none;
+
+    .presentation {
+
+        .userName {
+            color: $blackColor;
+            font-size: 20px;
+            text-transform: uppercase;
+            border-bottom: 0.5px solid $blackColor;
+        }
+
+        .userProfession {
+            display: flex;
+            justify-content: center;
+            color: $blackColor;
+            font-size: 14px;
+            font-weight: 400;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+    }
+
+    .contact {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        padding: 16px 0px;        
+
+        .inputGroupContact {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin: 8px 0px;
+            padding: 2px;
+            border-bottom: 1px solid #989898;
+            
+            label {
+                justify-content: flex-start;
+                font-weight: 500;
+                font-size: 14px;
+                margin-left: 4px;
+            }
+
+            input {
+                outline: none;
+                border: none;
+                background: transparent;
+                padding-left: 4px;
+                font-size: 14px;
+            }
+
+            .editInfo {
+                width: 20px;
+                display: block; 
+                align-items: center;
+                justify-content: flex-end;
+                height: 100%;
+                cursor: pointer;
+                
+                &:hover {
+                    color: #18d81f;
+                    transform: scale(1.2);
+
+                }
+            }
+
+            .icon {
+                width: 14px;
+            }
+            
+        }
+
+        .address {
+            display: flex;
+            align-items: end;
+            margin-top: 4px;
+
+            .IconMap {
+                width: 16px;
+                margin-right: 4px;
+            }
+
+            .textAddress {
+                font-size: 12px;
+                font-weight: 300;
+            }
+        }
+    }
 }

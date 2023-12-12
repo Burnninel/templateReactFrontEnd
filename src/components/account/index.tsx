@@ -36,10 +36,9 @@ export function TemplateAccount() {
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState<Address | null>(null)
 
+  const token = localStorage.getItem('token')
+
   useEffect(() => {
-
-    const token = localStorage.getItem('token')
-
     const config = {
       headers: {
         Authorization: `${token}`,
@@ -66,7 +65,23 @@ export function TemplateAccount() {
     setEmailState(false);
   };
 
-  const handleEmailConfirm = () => {
+  const handleEmailConfirm = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/updateAccount', {
+        token: token,
+        email: email
+      })
+      if (response.status === 200) {
+        console.log('Dados Atualizados!')
+      } else {
+        console.log('Fodeu magrão!')
+      }
+
+      setPhoneState(true);
+    } catch {
+      console.error('Erro ao enviar dados para o backend')
+    }
+
     setEmailState(true);
   };
 
@@ -78,8 +93,22 @@ export function TemplateAccount() {
     setPhoneState(false);
   };
 
-  const handlePhoneConfirm = () => {
-    setPhoneState(true);
+  const handlePhoneConfirm = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/updateAccount', {
+        token: token,
+        phone: phone
+      })
+      if (response.status === 200) {
+        console.log('Dados Atualizados!')
+      } else {
+        console.log('Fodeu magrão!')
+      }
+
+      setPhoneState(true);
+    } catch {
+      console.error('Erro ao enviar dados para o backend')
+    }
   };
 
   const handleCepChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +122,6 @@ export function TemplateAccount() {
     } catch (error) {
       console.error('Erro ao buscar CEP:', error);
     }
-
   };
 
   return (
@@ -101,7 +129,7 @@ export function TemplateAccount() {
       <div className={styles.template}>
         <motion.div
           className={styles.templateAccount}
-          whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.99999999999 }}
+          whileHover={{ scale: 1.04 }} 
           initial={{ y: -500, rotateY: 100 }}
           animate={{ y: 0, rotateY: 0, transition: { duration: 0.7 } }}
         >
@@ -143,7 +171,7 @@ export function TemplateAccount() {
                 </div>
               </div>
 
-              <div className={styles.address}> 
+              <div className={styles.address}>
                 {address && <IconMap />}
                 <span className={styles.textAddress}>
                   {address ? address.logradouro + ', ' + address.localidade + '/' + address.uf + '.' : ''}

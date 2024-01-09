@@ -36,15 +36,13 @@ export function TemplateAccount() {
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState<Address | null>(null)
 
-  const token = localStorage.getItem('token')
+  const config = {
+    headers: {
+      Authorization: `${localStorage.getItem('token')}`,
+    },
+  };
 
   useEffect(() => {
-    const config = {
-      headers: {
-        Authorization: `${token}`,
-      },
-    };
-
     axios.get('http://localhost:4000/account', config)
       .then(response => {
         setUserData(response.data)
@@ -53,9 +51,10 @@ export function TemplateAccount() {
       })
       .catch(error => {
         console.error(error);
+        console.log('fodeu')
       });
 
-  }, []);
+  }, [localStorage.getItem('token')]);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -65,25 +64,41 @@ export function TemplateAccount() {
     setEmailState(false);
   };
 
+  const reloadUserData = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/account', config);
+      setUserData(response.data);
+      setEmail(response.data.email);
+      setPhone(response.data.phone);
+    } catch (error) {
+      console.error(error);
+      console.log('Erro ao recarregar dados da conta');
+    }
+  };
+
   const handleEmailConfirm = async () => {
     try {
       const response = await axios.post('http://localhost:4000/updateAccount', {
-        token: token,
         email: email
-      })
+      }, config)
+
       if (response.status === 200) {
         console.log('Dados Atualizados!')
+        localStorage.setItem('token', response.data.token);
+        reloadUserData();
       } else {
         console.log('Fodeu magrão!')
       }
 
       setPhoneState(true);
+
     } catch {
       console.error('Erro ao enviar dados para o backend')
     }
 
     setEmailState(true);
   };
+
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(event.target.value);
@@ -95,12 +110,20 @@ export function TemplateAccount() {
 
   const handlePhoneConfirm = async () => {
     try {
+      const config = {
+        headers: {
+          Authorization: `${localStorage.getItem('token')}`,
+        },
+      };
+
       const response = await axios.post('http://localhost:4000/updateAccount', {
-        token: token,
         phone: phone
-      })
+      }, config)
+
       if (response.status === 200) {
         console.log('Dados Atualizados!')
+        localStorage.setItem('token', response.data.token);
+        reloadUserData();
       } else {
         console.log('Fodeu magrão!')
       }
@@ -129,7 +152,7 @@ export function TemplateAccount() {
       <div className={styles.template}>
         <motion.div
           className={styles.templateAccount}
-          whileHover={{ scale: 1.04 }} 
+          whileHover={{ scale: 1.04 }}
           initial={{ y: -500, rotateY: 100 }}
           animate={{ y: 0, rotateY: 0, transition: { duration: 0.7 } }}
         >

@@ -17,21 +17,49 @@ $colorError: #d70b0b;
 
 .leftProfile {
     width: 265px;
-
+    
     .photoProfile {
         display: flex;
+        position: relative;
         background: $gradient;
         border-radius: 100%;
         padding: 4px;
         height: 220px;
         width: 220px;
+        cursor: pointer;
+        
+        .IconEditImg {
+            height: 60px;
+            position: absolute;
+            top: 50%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            display: none;
+            transition: 0.4s;
+
+        }
 
         img {
             height: 100%;
             width: 100%;
             border-radius: 100%;
             object-fit: cover;
+            transition: 0.4s;
         }
+
+        &:hover {
+            img {
+                opacity: 0.8;
+            }
+
+            .IconEditImg {
+                display: flex;
+
+            }
+        }
+
+        
     }
 }
 
@@ -129,6 +157,33 @@ $colorError: #d70b0b;
                 font-size: 12px;
                 font-weight: 300;
             }
+        }
+    }
+
+    .imgUpdate {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+
+        .titleImgUpdate {
+            color: $blackColor;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .selectImg {
+            display: flex;
+            text-align: center;
+            align-items: center;
+            height: 120px;
+            padding: 0px 16px;
+            background-color: #00000010;
+            border: 2px dotted #00000010;
+            border-radius: 10px;
+            cursor: pointer;
         }
     }
 }

@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, DragEvent } from "react";
 import axios from "axios";
 
 import myPhoto from './my photo.jpg';
 
 import styles from './styles.module.scss';
-import { IconEdit, IconConfirm, IconSearch, IconMap } from "../icons/icons";
+import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg } from "../icons/icons";
 
 type User = {
   id: string
@@ -24,7 +24,6 @@ type Address = {
 }
 
 export function TemplateAccount() {
-
   const [userData, setUserData] = useState<User | null>(null)
 
   const [email, setEmail] = useState('')
@@ -35,6 +34,8 @@ export function TemplateAccount() {
 
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState<Address | null>(null)
+
+  const [editImg, setEditImg] = useState(false)
 
   const config = {
     headers: {
@@ -53,7 +54,6 @@ export function TemplateAccount() {
         console.error(error);
         console.log('fodeu')
       });
-
   }, [localStorage.getItem('token')]);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,18 +64,6 @@ export function TemplateAccount() {
     setEmailState(false);
   };
 
-  const reloadUserData = async () => {
-    try {
-      const response = await axios.get('http://localhost:4000/account', config);
-      setUserData(response.data);
-      setEmail(response.data.email);
-      setPhone(response.data.phone);
-    } catch (error) {
-      console.error(error);
-      console.log('Erro ao recarregar dados da conta');
-    }
-  };
-
   const handleEmailConfirm = async () => {
     try {
       const response = await axios.post('http://localhost:4000/updateAccount', {
@@ -83,11 +71,9 @@ export function TemplateAccount() {
       }, config)
 
       if (response.status === 200) {
-        console.log('Dados Atualizados!')
         localStorage.setItem('token', response.data.token);
-        reloadUserData();
       } else {
-        console.log('Fodeu magrão!')
+        console.log('Ops! Ocorreu um erro ao atualizar os dados.')
       }
 
       setPhoneState(true);
@@ -98,7 +84,6 @@ export function TemplateAccount() {
 
     setEmailState(true);
   };
-
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(event.target.value);
@@ -121,11 +106,9 @@ export function TemplateAccount() {
       }, config)
 
       if (response.status === 200) {
-        console.log('Dados Atualizados!')
         localStorage.setItem('token', response.data.token);
-        reloadUserData();
       } else {
-        console.log('Fodeu magrão!')
+        console.log('Ops! Ocorreu um erro ao atualizar os dados.')
       }
 
       setPhoneState(true);
@@ -133,6 +116,10 @@ export function TemplateAccount() {
       console.error('Erro ao enviar dados para o backend')
     }
   };
+
+  const handleEditImg = () => {
+    !editImg ? setEditImg(true) : setEditImg(false)
+  }
 
   const handleCepChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCep(event.target.value);
@@ -147,6 +134,62 @@ export function TemplateAccount() {
     }
   };
 
+  const renderProfile = () => {
+    return (
+      <>
+        <div className={styles.presentation}>
+          <h3 className={styles.userName}>{userData ? userData.name : 'Loading...'}</h3>
+          <h3 className={styles.userProfession}>{userData ? userData.profession : 'Loading...'}</h3>
+        </div>
+
+        <div className={styles.contact}>
+          <div className={styles.inputGroupContact}>
+            <label className={styles.userEmail}>Email: </label>
+            <input className={styles.textInput} type="text" value={email} disabled={emailState} onChange={handleEmailChange} />
+            <div className={styles.editInfo}>
+              {emailState ? <IconEdit onClick={handleEmailState} /> : <IconConfirm onClick={handleEmailConfirm} />}
+            </div>
+          </div>
+
+          <div className={styles.inputGroupContact}>
+            <label className={styles.userEmail}>Telefone: </label>
+            <input className={styles.textInput} type="text" value={phone ? phone : 'Não cadastrado...'} disabled={phoneState} onChange={handlePhoneChange} />
+            <div className={styles.editInfo}>
+              {phoneState ? <IconEdit onClick={handlePhoneState} /> : <IconConfirm onClick={handlePhoneConfirm} />}
+            </div>
+          </div>
+
+          <div className={styles.inputGroupContact}>
+            <label className={styles.userEmail}>CEP: </label>
+            <input className={styles.textInput} type="text" placeholder="Digite seu cep..." maxLength={8} onChange={handleCepChange} />
+            <div className={styles.editInfo}>
+              <IconSearch onClick={fetchCep} />
+            </div>
+          </div>
+
+          <div className={styles.address}>
+            {address && <IconMap />}
+            <span className={styles.textAddress}>
+              {address ? address.logradouro + ', ' + address.localidade + '/' + address.uf + '.' : ''}
+            </span>
+          </div>
+
+        </div>
+      </>
+    )
+  }
+
+  const renderEditImg = () => {
+    return (
+      <>
+        <div className={styles.imgUpdate}>
+          <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
+          <div className={styles.selectImg}>Arraste e solte ou selecione uma imagem</div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div className={styles.template}>
@@ -158,50 +201,14 @@ export function TemplateAccount() {
         >
 
           <div className={styles.leftProfile}>
-            <div className={styles.photoProfile}>
+            <div className={styles.photoProfile} onClick={handleEditImg}>
               <img src={myPhoto} alt="myphoto" />
+              <IconEditImg />
             </div>
           </div>
 
           <div className={styles.rightProfile}>
-            <div className={styles.presentation}>
-              <h3 className={styles.userName}>{userData ? userData.name : 'Loading...'}</h3>
-              <h3 className={styles.userProfession}>{userData ? userData.profession : 'Loading...'}</h3>
-            </div>
-
-            <div className={styles.contact}>
-              <div className={styles.inputGroupContact}>
-                <label className={styles.userEmail}>Email: </label>
-                <input className={styles.textInput} type="text" value={email} disabled={emailState} onChange={handleEmailChange} />
-                <div className={styles.editInfo}>
-                  {emailState ? <IconEdit onClick={handleEmailState} /> : <IconConfirm onClick={handleEmailConfirm} />}
-                </div>
-              </div>
-
-              <div className={styles.inputGroupContact}>
-                <label className={styles.userEmail}>Telefone: </label>
-                <input className={styles.textInput} type="text" value={phone ? phone : 'Não cadastrado...'} disabled={phoneState} onChange={handlePhoneChange} />
-                <div className={styles.editInfo}>
-                  {phoneState ? <IconEdit onClick={handlePhoneState} /> : <IconConfirm onClick={handlePhoneConfirm} />}
-                </div>
-              </div>
-
-              <div className={styles.inputGroupContact}>
-                <label className={styles.userEmail}>CEP: </label>
-                <input className={styles.textInput} type="text" placeholder="Digite seu cep..." maxLength={8} onChange={handleCepChange} />
-                <div className={styles.editInfo}>
-                  <IconSearch onClick={fetchCep} />
-                </div>
-              </div>
-
-              <div className={styles.address}>
-                {address && <IconMap />}
-                <span className={styles.textAddress}>
-                  {address ? address.logradouro + ', ' + address.localidade + '/' + address.uf + '.' : ''}
-                </span>
-              </div>
-
-            </div>
+            {!editImg ? renderProfile() : renderEditImg()}
           </div>
 
         </motion.div>

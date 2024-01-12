@@ -41,6 +41,8 @@ export function TemplateAccount() {
 
   const [fileName, setFileName] = useState('')
 
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+
   const config = {
     headers: {
       Authorization: `${localStorage.getItem('token')}`,
@@ -68,6 +70,8 @@ export function TemplateAccount() {
 
       reader.readAsText(file)
     });
+
+    setAcceptedFiles(acceptedFiles);
   }, []);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -171,6 +175,12 @@ export function TemplateAccount() {
       console.log('Erro ao fazer o upload da imagem!')
     }
   }
+  
+  const handleCancel = () => {
+    acceptedFiles.splice(0, 1)
+    setAcceptedFiles([...acceptedFiles]);
+    setEditImg(false)
+  }
 
   useEffect(() => {
     setBgDropzone(dropzone.acceptedFiles.length > 0 ? '#1ba4ff41' : '#00000010')
@@ -192,7 +202,7 @@ export function TemplateAccount() {
           </form>
 
           <div className={styles.btnGroup}>
-            <button>cancelar</button>
+            <button onClick={handleCancel}>cancelar</button>
             <button onClick={handleUpdateImg}>atualizar</button>
           </div>
         </div>

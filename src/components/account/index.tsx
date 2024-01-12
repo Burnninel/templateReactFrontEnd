@@ -65,14 +65,14 @@ export function TemplateAccount() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
       const reader = new FileReader();
-   
+
       reader.onload = () => {
         console.log('Conteúdo do arquivo:', file);
       };
-   
+
       reader.readAsText(file);
     });
-   }, []);
+  }, []);
 
   const dropzone = useDropzone({ onDrop });
 
@@ -154,12 +154,30 @@ export function TemplateAccount() {
     }
   };
 
+  const handleUpdateImg = async () => {
+    try {
+      let formData = new FormData();
+      
+      dropzone.acceptedFiles.forEach((file: File) => {
+        formData.append('avatar', file);
+      });
+
+      const response = await axios.post(`http://localhost:4000/uploadPhoto`, formData, config);
+
+      if (response.status == 200) {
+        console.log('deu boa')
+      }
+    } catch (error) {
+      console.log('deu ruim')
+    }
+  }
+
   const renderEditImg = () => {
     return (
       <>
         <div className={styles.imgUpdate}>
           <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
-          
+
           <form className={styles.selectImg} {...dropzone.getRootProps()}>
             <input {...dropzone.getInputProps()} />
             <p>Arraste e solte ou clique para selecionar uma imagem</p>
@@ -167,7 +185,7 @@ export function TemplateAccount() {
 
           <div className={styles.btnGroup}>
             <button>cancelar</button>
-            <button>atualizar</button>
+            <button onClick={handleUpdateImg}>atualizar</button>
           </div>
         </div>
       </>

@@ -166,6 +166,7 @@ $colorError: #d70b0b;
         align-items: center;
         justify-content: center;
         height: 100%;
+        width: 100%;
 
         .titleImgUpdate {
             color: $blackColor;
@@ -179,11 +180,25 @@ $colorError: #d70b0b;
             text-align: center;
             align-items: center;
             height: 100%;
-            padding: 0px 16px;
-            background-color: #00000010;
-            border: 2px dotted #00000010;
+            min-width: 100%;
+            border: 2px dotted;
             border-radius: 10px;
             cursor: pointer;
+
+            p, div {
+                width: 100%;
+            }
+
+            div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .iconImg {
+                height: 20px;
+                margin-right: 6px;
+            }
         }
 
         .btnGroup {

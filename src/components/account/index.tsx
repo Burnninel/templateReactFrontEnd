@@ -3,30 +3,24 @@ import { useEffect, useState, useCallback } from "react";
 import { useDropzone } from 'react-dropzone';
 import axios from "axios";
 
-import myPhoto from './my photo.jpg';
-
-import styles from './styles.module.scss';
-import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg } from "../icons/icons";
+import myPhoto from './my photo.jpg'
+import styles from './styles.module.scss'
+import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg, IconImg } from "../icons/icons"
 
 type User = {
-  id: string
-  email: string;
-  name: string;
+  id: string,
+  email: string,
+  name: string,
   profession: string,
-  phone: string,
+  phone: string
 }
 
 type Address = {
-  logradouro: string
-  bairro: string;
-  localidade: string;
+  logradouro: string,
+  bairro: string,
+  localidade: string,
   uf: string,
-  phone: string,
-}
-
-interface MyFile extends File {
-  name: string;
-  preview: string;
+  phone: string
 }
 
 export function TemplateAccount() {
@@ -43,50 +37,56 @@ export function TemplateAccount() {
 
   const [editImg, setEditImg] = useState(false)
 
+  const [bgDropzone, setBgDropzone] = useState('#00000010')
+
+  const [fileName, setFileName] = useState('')
+
   const config = {
     headers: {
       Authorization: `${localStorage.getItem('token')}`,
     },
-  };
+  }
 
   useEffect(() => {
     axios.get('http://localhost:4000/account', config)
       .then(response => {
         setUserData(response.data)
-        setEmail(response.data.email);
+        setEmail(response.data.email)
         setPhone(response.data.phone)
       })
       .catch(error => {
-        console.error(error);
+        console.error(error)
         console.log('fodeu')
       });
-  }, [localStorage.getItem('token')]);
+  }, [localStorage.getItem('token')])
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file: File) => {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
-      reader.onload = () => {
-        console.log('Conteúdo do arquivo:', file);
-      };
+      setFileName(file.name)
 
-      reader.readAsText(file);
+      reader.readAsText(file)
     });
   }, []);
 
-  const dropzone = useDropzone({ onDrop });
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault()
+  }, []);
+
+  const dropzone = useDropzone({ onDrop, onDragOver })
 
   const handleEditImg = () => {
     !editImg ? setEditImg(true) : setEditImg(false)
   }
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
+    setEmail(event.target.value)
+  }
 
   const handleEmailState = () => {
     setEmailState(false);
-  };
+  }
 
   const handleEmailConfirm = async () => {
     try {
@@ -100,22 +100,22 @@ export function TemplateAccount() {
         console.log('Ops! Ocorreu um erro ao atualizar os dados.')
       }
 
-      setPhoneState(true);
+      setPhoneState(true)
 
     } catch {
       console.error('Erro ao enviar dados para o backend')
     }
 
     setEmailState(true);
-  };
+  }
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(event.target.value);
-  };
+    setPhone(event.target.value)
+  }
 
   const handlePhoneState = () => {
-    setPhoneState(false);
-  };
+    setPhoneState(false)
+  }
 
   const handlePhoneConfirm = async () => {
     try {
@@ -139,38 +139,42 @@ export function TemplateAccount() {
     } catch {
       console.error('Erro ao enviar dados para o backend')
     }
-  };
+  }
 
   const handleCepChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCep(event.target.value);
-  };
+    setCep(event.target.value)
+  }
 
   const fetchCep = async () => {
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      setAddress(response.data);
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+      setAddress(response.data)
     } catch (error) {
-      console.error('Erro ao buscar CEP:', error);
+      console.error('Erro ao buscar CEP:', error)
     }
-  };
+  }
 
   const handleUpdateImg = async () => {
     try {
-      let formData = new FormData();
-      
+      let formData = new FormData()
+
       dropzone.acceptedFiles.forEach((file: File) => {
-        formData.append('avatar', file);
+        formData.append('avatar', file)
       });
 
-      const response = await axios.post(`http://localhost:4000/uploadPhoto`, formData, config);
+      const response = await axios.post(`http://localhost:4000/uploadPhoto`, formData, config)
 
       if (response.status == 200) {
         console.log('deu boa')
       }
     } catch (error) {
-      console.log('deu ruim')
+      console.log('Erro ao fazer o upload da imagem!')
     }
   }
+
+  useEffect(() => {
+    setBgDropzone(dropzone.acceptedFiles.length > 0 ? '#1ba4ff41' : '#00000010')
+  }, [dropzone.acceptedFiles.length])
 
   const renderEditImg = () => {
     return (
@@ -178,9 +182,13 @@ export function TemplateAccount() {
         <div className={styles.imgUpdate}>
           <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
 
-          <form className={styles.selectImg} {...dropzone.getRootProps()}>
+          <form className={styles.selectImg} style={{ backgroundColor: bgDropzone, borderColor: bgDropzone  }} {...dropzone.getRootProps()}>
             <input {...dropzone.getInputProps()} />
-            <p>Arraste e solte ou clique para selecionar uma imagem</p>
+            { 
+              dropzone.acceptedFiles.length > 0 
+              ? <div><IconImg /><span>{ fileName }</span></div> 
+              : <p>{dropzone.isDragActive ? 'Solte aqui o arquivo!' : 'Arraste e solte ou clique para selecionar uma imagem!'}</p>
+            }
           </form>
 
           <div className={styles.btnGroup}>
@@ -261,5 +269,5 @@ export function TemplateAccount() {
         </motion.div>
       </div>
     </>
-  );
+  )
 }

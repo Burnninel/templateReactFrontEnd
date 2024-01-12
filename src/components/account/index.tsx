@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useEffect, useState, DragEvent } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useDropzone } from 'react-dropzone';
 import axios from "axios";
 
 import myPhoto from './my photo.jpg';
@@ -21,6 +22,11 @@ type Address = {
   localidade: string;
   uf: string,
   phone: string,
+}
+
+interface MyFile extends File {
+  name: string;
+  preview: string;
 }
 
 export function TemplateAccount() {
@@ -55,6 +61,24 @@ export function TemplateAccount() {
         console.log('fodeu')
       });
   }, [localStorage.getItem('token')]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    acceptedFiles.forEach((file: File) => {
+      const reader = new FileReader();
+   
+      reader.onload = () => {
+        console.log('Conteúdo do arquivo:', file);
+      };
+   
+      reader.readAsText(file);
+    });
+   }, []);
+
+  const dropzone = useDropzone({ onDrop });
+
+  const handleEditImg = () => {
+    !editImg ? setEditImg(true) : setEditImg(false)
+  }
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -117,10 +141,6 @@ export function TemplateAccount() {
     }
   };
 
-  const handleEditImg = () => {
-    !editImg ? setEditImg(true) : setEditImg(false)
-  }
-
   const handleCepChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCep(event.target.value);
   };
@@ -133,6 +153,26 @@ export function TemplateAccount() {
       console.error('Erro ao buscar CEP:', error);
     }
   };
+
+  const renderEditImg = () => {
+    return (
+      <>
+        <div className={styles.imgUpdate}>
+          <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
+          
+          <form className={styles.selectImg} {...dropzone.getRootProps()}>
+            <input {...dropzone.getInputProps()} />
+            <p>Arraste e solte ou clique para selecionar uma imagem</p>
+          </form>
+
+          <div className={styles.btnGroup}>
+            <button>cancelar</button>
+            <button>atualizar</button>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   const renderProfile = () => {
     return (
@@ -174,17 +214,6 @@ export function TemplateAccount() {
             </span>
           </div>
 
-        </div>
-      </>
-    )
-  }
-
-  const renderEditImg = () => {
-    return (
-      <>
-        <div className={styles.imgUpdate}>
-          <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
-          <div className={styles.selectImg}>Arraste e solte ou selecione uma imagem</div>
         </div>
       </>
     )

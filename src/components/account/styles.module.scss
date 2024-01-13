@@ -183,6 +183,7 @@ $colorError: #d70b0b;
             min-width: 100%;
             border: 2px dotted;
             border-radius: 10px;
+            background-color: #1cff247f;
             cursor: pointer;
 
             p, div {
@@ -198,6 +199,10 @@ $colorError: #d70b0b;
             .iconImg {
                 height: 20px;
                 margin-right: 6px;
+            }
+
+            .iconImgUpdateImg {
+                height: 80px;
             }
         }
 

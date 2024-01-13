@@ -5,7 +5,7 @@ import axios from "axios";
 
 import myPhoto from './my photo.jpg'
 import styles from './styles.module.scss'
-import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg, IconImg } from "../icons/icons"
+import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg, IconImg, IconUpdateImg } from "../icons/icons"
 
 type User = {
   id: string,
@@ -42,6 +42,8 @@ export function TemplateAccount() {
   const [fileName, setFileName] = useState('')
 
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+
+  const [updateImg, setUpdateImg] = useState(false)
 
   const config = {
     headers: {
@@ -170,6 +172,17 @@ export function TemplateAccount() {
 
       if (response.status == 200) {
         console.log('deu boa')
+
+        setUpdateImg(true)
+
+        setBgDropzone('#1cff247f')
+
+        setTimeout(() => {
+          setEditImg(false)
+          acceptedFiles.splice(0, 1)
+          setAcceptedFiles([...acceptedFiles])
+          setUpdateImg(false)
+        }, 1500)
       }
     } catch (error) {
       console.log('Erro ao fazer o upload da imagem!')
@@ -178,7 +191,7 @@ export function TemplateAccount() {
   
   const handleCancel = () => {
     acceptedFiles.splice(0, 1)
-    setAcceptedFiles([...acceptedFiles]);
+    setAcceptedFiles([...acceptedFiles])
     setEditImg(false)
   }
 
@@ -193,12 +206,17 @@ export function TemplateAccount() {
           <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
 
           <form className={styles.selectImg} style={{ backgroundColor: bgDropzone, borderColor: bgDropzone  }} {...dropzone.getRootProps()}>
-            <input {...dropzone.getInputProps()} />
-            { 
-              dropzone.acceptedFiles.length > 0 
-              ? <div><IconImg /><span>{ fileName }</span></div> 
-              : <p>{dropzone.isDragActive ? 'Solte aqui o arquivo!' : 'Arraste e solte ou clique para selecionar uma imagem!'}</p>
-            }
+          {!updateImg ?
+              <>
+                  <input {...dropzone.getInputProps()} />
+                  { 
+                    dropzone.acceptedFiles.length > 0 
+                    ? <div><IconImg /><span>{ fileName }</span></div> 
+                    : <p>{dropzone.isDragActive ? 'Solte aqui o arquivo!' : 'Arraste e solte ou clique para selecionar uma imagem!'}</p>
+                  }
+              </>
+              : <div><IconUpdateImg /></div>
+          }            
           </form>
 
           <div className={styles.btnGroup}>

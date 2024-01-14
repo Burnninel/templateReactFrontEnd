@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useDropzone } from 'react-dropzone';
 import axios from "axios";
 
-import myPhoto from './my photo.jpg'
 import styles from './styles.module.scss'
 import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg, IconImg, IconUpdateImg } from "../icons/icons"
 
@@ -12,7 +11,8 @@ type User = {
   email: string,
   name: string,
   profession: string,
-  phone: string
+  phone: string,
+  photo: string
 }
 
 type Address = {
@@ -32,7 +32,7 @@ export function TemplateAccount() {
   const [phone, setPhone] = useState('')
   const [phoneState, setPhoneState] = useState(true)
 
-  const [cep, setCep] = useState('');
+  const [cep, setCep] = useState('')
   const [address, setAddress] = useState<Address | null>(null)
 
   const [editImg, setEditImg] = useState(false)
@@ -41,9 +41,11 @@ export function TemplateAccount() {
 
   const [fileName, setFileName] = useState('')
 
-  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([])
 
   const [updateImg, setUpdateImg] = useState(false)
+
+  const [imgUrl, setImgUrl] = useState('')
 
   const config = {
     headers: {
@@ -57,6 +59,7 @@ export function TemplateAccount() {
         setUserData(response.data)
         setEmail(response.data.email)
         setPhone(response.data.phone)
+        setImgUrl(`http://localhost:4000/uploads/${response.data.photo}`);
       })
       .catch(error => {
         console.error(error)
@@ -71,14 +74,14 @@ export function TemplateAccount() {
       setFileName(file.name)
 
       reader.readAsText(file)
-    });
+    })
 
     setAcceptedFiles(acceptedFiles);
-  }, []);
+  }, [])
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault()
-  }, []);
+  }, [])
 
   const dropzone = useDropzone({ onDrop, onDragOver })
 
@@ -91,7 +94,7 @@ export function TemplateAccount() {
   }
 
   const handleEmailState = () => {
-    setEmailState(false);
+    setEmailState(false)
   }
 
   const handleEmailConfirm = async () => {
@@ -136,12 +139,12 @@ export function TemplateAccount() {
       }, config)
 
       if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', response.data.token)
       } else {
         console.log('Ops! Ocorreu um erro ao atualizar os dados.')
       }
 
-      setPhoneState(true);
+      setPhoneState(true)
     } catch {
       console.error('Erro ao enviar dados para o backend')
     }
@@ -171,10 +174,7 @@ export function TemplateAccount() {
       const response = await axios.post(`http://localhost:4000/uploadPhoto`, formData, config)
 
       if (response.status == 200) {
-        console.log('deu boa')
-
         setUpdateImg(true)
-
         setBgDropzone('#1cff247f')
 
         setTimeout(() => {
@@ -182,7 +182,9 @@ export function TemplateAccount() {
           acceptedFiles.splice(0, 1)
           setAcceptedFiles([...acceptedFiles])
           setUpdateImg(false)
+          localStorage.setItem('token', response.data.token);
         }, 1500)
+
       }
     } catch (error) {
       console.log('Erro ao fazer o upload da imagem!')
@@ -285,7 +287,7 @@ export function TemplateAccount() {
 
           <div className={styles.leftProfile}>
             <div className={styles.photoProfile} onClick={handleEditImg}>
-              <img src={myPhoto} alt="myphoto" />
+              <img src={imgUrl} alt="myphoto" />
               <IconEditImg />
             </div>
           </div>

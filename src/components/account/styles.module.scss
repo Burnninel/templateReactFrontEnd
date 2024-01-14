@@ -206,6 +206,17 @@ $colorError: #d70b0b;
                 justify-content: center;
             }
 
+            .invalidImg {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                text-transform: uppercase;
+                font-weight: 600;
+                font-size: 12px;
+                color: $colorError;
+            }
+
             .iconImg {
                 height: 20px;
                 margin-right: 6px;
@@ -213,6 +224,11 @@ $colorError: #d70b0b;
 
             .iconImgUpdateImg {
                 height: 80px;
+            }
+
+            .iconInvalidImg {
+                height: 60px;
+                margin-bottom: 10px;
             }
         }
 

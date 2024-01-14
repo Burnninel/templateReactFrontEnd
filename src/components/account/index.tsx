@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import axios from "axios"
 
 import styles from './styles.module.scss'
-import { IconEdit, IconConfirm, IconSearch, IconMap, IconImgProfile, IconEditImg, IconImg, IconUpdateImg } from "../icons/icons"
+import { IconEdit, IconConfirm, IconSearch, IconMap, IconImgProfile, IconEditImg, IconImg, IconUpdateImg, IconInvalidImg } from "../icons/icons"
 
 type User = {
   id: string,
@@ -45,6 +45,8 @@ export function TemplateAccount() {
 
   const [updateImg, setUpdateImg] = useState(false)
 
+  const [invalidImg, setInvalidImg] = useState(false)
+
   const [imgUrl, setImgUrl] = useState('')
 
   const config = {
@@ -64,10 +66,12 @@ export function TemplateAccount() {
       .catch(error => {
         console.error(error)
         console.log('fodeu')
-      });
+      })
   }, [localStorage.getItem('token')])
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    setInvalidImg(false)
+
     acceptedFiles.forEach((file: File) => {
       const reader = new FileReader()
 
@@ -76,7 +80,7 @@ export function TemplateAccount() {
       reader.readAsText(file)
     })
 
-    setAcceptedFiles(acceptedFiles);
+    setAcceptedFiles(acceptedFiles)
   }, [])
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -104,7 +108,7 @@ export function TemplateAccount() {
       }, config)
 
       if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', response.data.token)
       } else {
         console.log('Ops! Ocorreu um erro ao atualizar os dados.')
       }
@@ -115,7 +119,7 @@ export function TemplateAccount() {
       console.error('Erro ao enviar dados para o backend')
     }
 
-    setEmailState(true);
+    setEmailState(true)
   }
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +136,7 @@ export function TemplateAccount() {
         headers: {
           Authorization: `${localStorage.getItem('token')}`,
         },
-      };
+      }
 
       const response = await axios.post('http://localhost:4000/updateAccount', {
         phone: phone
@@ -169,7 +173,7 @@ export function TemplateAccount() {
 
       dropzone.acceptedFiles.forEach((file: File) => {
         formData.append('avatar', file)
-      });
+      })
 
       const response = await axios.post(`http://localhost:4000/uploadPhoto`, formData, config)
 
@@ -184,13 +188,13 @@ export function TemplateAccount() {
           setUpdateImg(false)
           localStorage.setItem('token', response.data.token)
         }, 1500)
-
       }
     } catch (error) {
-      console.log('Erro ao fazer o upload da imagem!')
+      setInvalidImg(true)
+      setBgDropzone('#ff00003c')
     }
   }
-  
+
   const handleCancel = () => {
     acceptedFiles.splice(0, 1)
     setAcceptedFiles([...acceptedFiles])
@@ -207,18 +211,31 @@ export function TemplateAccount() {
         <div className={styles.imgUpdate}>
           <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
 
-          <form className={styles.selectImg} style={{ backgroundColor: bgDropzone, borderColor: bgDropzone  }} {...dropzone.getRootProps()}>
-          {!updateImg ?
+          <form className={styles.selectImg} style={{ backgroundColor: bgDropzone, borderColor: bgDropzone }} {...dropzone.getRootProps()}>
+            {!updateImg ?
               <>
-                  <input {...dropzone.getInputProps()} />
-                  { 
-                    dropzone.acceptedFiles.length > 0 
-                    ? <div><IconImg /><span>{ fileName }</span></div> 
-                    : <p>{dropzone.isDragActive ? 'Solte aqui o arquivo!' : 'Arraste e solte ou clique para selecionar uma imagem!'}</p>
-                  }
+                {
+                  invalidImg
+                    ? <>
+                        <input {...dropzone.getInputProps()} />
+                        <div className={styles.invalidImg}>
+                          <IconInvalidImg />
+                          <p>Arquivo inválido!</p>
+                        </div>
+                      </>
+                    : <>
+                        <input {...dropzone.getInputProps()} />
+                        {
+                          dropzone.acceptedFiles.length > 0
+                            ? <div><IconImg /><span>{fileName}</span></div>
+                            : <p>{dropzone.isDragActive ? 'Solte aqui o arquivo!' : 'Arraste e solte ou clique para selecionar uma imagem!'}</p>
+                        }
+                      </>
+                }
+
               </>
               : <div><IconUpdateImg /></div>
-          }            
+            }
           </form>
 
           <div className={styles.btnGroup}>
@@ -288,17 +305,17 @@ export function TemplateAccount() {
           <div className={styles.leftProfile}>
             <div className={styles.photoProfile} onClick={handleEditImg}>
               {
-                !imgUrl 
-                ? <>
+                !imgUrl
+                  ? <>
                     <div>
                       <IconImgProfile />
                     </div>
                     <IconEditImg />
-                  </>  
-                : <>
+                  </>
+                  : <>
                     <img src={imgUrl} alt={imgUrl} />
                     <IconEditImg />
-                  </>  
+                  </>
               }
             </div>
           </div>

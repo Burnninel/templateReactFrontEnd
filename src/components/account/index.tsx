@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
-import { useEffect, useState, useCallback } from "react";
-import { useDropzone } from 'react-dropzone';
-import axios from "axios";
+import { motion } from "framer-motion"
+import { useEffect, useState, useCallback } from "react"
+import { useDropzone } from 'react-dropzone'
+import axios from "axios"
 
 import styles from './styles.module.scss'
-import { IconEdit, IconConfirm, IconSearch, IconMap, IconEditImg, IconImg, IconUpdateImg } from "../icons/icons"
+import { IconEdit, IconConfirm, IconSearch, IconMap, IconImgProfile, IconEditImg, IconImg, IconUpdateImg } from "../icons/icons"
 
 type User = {
   id: string,
@@ -59,7 +59,7 @@ export function TemplateAccount() {
         setUserData(response.data)
         setEmail(response.data.email)
         setPhone(response.data.phone)
-        setImgUrl(`http://localhost:4000/uploads/${response.data.photo}`);
+        response.data.photo == undefined ? setImgUrl('') : setImgUrl(`http://localhost:4000/uploads/${response.data.photo}`)
       })
       .catch(error => {
         console.error(error)
@@ -182,7 +182,7 @@ export function TemplateAccount() {
           acceptedFiles.splice(0, 1)
           setAcceptedFiles([...acceptedFiles])
           setUpdateImg(false)
-          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('token', response.data.token)
         }, 1500)
 
       }
@@ -287,8 +287,19 @@ export function TemplateAccount() {
 
           <div className={styles.leftProfile}>
             <div className={styles.photoProfile} onClick={handleEditImg}>
-              <img src={imgUrl} alt="myphoto" />
-              <IconEditImg />
+              {
+                !imgUrl 
+                ? <>
+                    <div>
+                      <IconImgProfile />
+                    </div>
+                    <IconEditImg />
+                  </>  
+                : <>
+                    <img src={imgUrl} alt={imgUrl} />
+                    <IconEditImg />
+                  </>  
+              }
             </div>
           </div>
 

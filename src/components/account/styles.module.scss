@@ -4,7 +4,6 @@ $gradient: linear-gradient(180deg, #00b4c5 0%, rgb(16, 236, 199) 100%);
 $colorInput: #565050;
 $colorError: #d70b0b;
 
-
 .template .templateAccount {
     display: flex;
     flex-direction: row;
@@ -28,6 +27,20 @@ $colorError: #d70b0b;
         width: 220px;
         cursor: pointer;
         
+        div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+            background-color: #ffffffa3;
+
+            .iconImgUpdateImg {
+                height: 140px;
+            }
+        }
+
         .IconEditImg {
             height: 60px;
             position: absolute;
@@ -37,7 +50,6 @@ $colorError: #d70b0b;
             color: #fff;
             display: none;
             transition: 0.4s;
-
         }
 
         img {
@@ -49,17 +61,14 @@ $colorError: #d70b0b;
         }
 
         &:hover {
-            img {
-                opacity: 0.8;
+            img, div {
+                opacity: 0.7;
             }
 
             .IconEditImg {
                 display: flex;
-
             }
         }
-
-        
     }
 }
 
@@ -74,6 +83,7 @@ $colorError: #d70b0b;
     .presentation {
 
         .userName {
+            text-align: center;
             color: $blackColor;
             font-size: 20px;
             text-transform: uppercase;
@@ -230,10 +240,7 @@ $colorError: #d70b0b;
                     background-color: #20e3f4;
                     color: #fff;
                 }
-
             }
-
-            
         }
     }
 }

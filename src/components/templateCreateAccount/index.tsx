@@ -1,27 +1,27 @@
-import { motion } from "framer-motion";
-import { useState } from 'react'
-import axios from "axios";
+import { motion } from "framer-motion"
+import { useState, ChangeEvent } from 'react'
+import { api } from '../../services/api'
 
 import styles from './styles.module.scss'
 
 export function TemplateCreateAccount() {
 
-    const [valueName, setValueName] = useState('');
-    const [errorName, setErrorName] = useState(false);
+    const [valueName, setValueName] = useState<string>('')
+    const [errorName, setErrorName] = useState<boolean>(false)
 
-    const [valueEmail, setValueEmail] = useState('');
-    const [errorEmail, setErrorEmail] = useState(false);
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const [valueEmail, setValueEmail] = useState<string>('')
+    const [errorEmail, setErrorEmail] = useState<boolean>(false)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-    const [valueProfession, setValueProfession] = useState('');
-    const [errorProfession, setErrorProfession] = useState(false);
+    const [valueProfession, setValueProfession] = useState<string>('')
+    const [errorProfession, setErrorProfession] = useState<boolean>(false)
 
-    const [valuePw, setValuePw] = useState('');
-    const [errorPw, setErrorPw] = useState(false);
+    const [valuePw, setValuePw] = useState<string>('')
+    const [errorPw, setErrorPw] = useState<boolean>(false)
 
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
-    const handleNameChange = (event: any) => {
+    const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValueName(event.target.value)
 
         if (isSubmitted) {
@@ -29,7 +29,7 @@ export function TemplateCreateAccount() {
         }
     }
 
-    const handleEmailChange = (event: any) => {
+    const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValueEmail(event.target.value)
 
         if (isSubmitted) {
@@ -37,15 +37,15 @@ export function TemplateCreateAccount() {
         }
     }
 
-    const handleProfessionChange = (event: any) => {
+    const handleProfessionChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValueProfession(event.target.value)
 
         if (isSubmitted) {
-            setErrorProfession(!event.target.value);
+            setErrorProfession(!event.target.value)
         }
     }
 
-    const handlePwChange = (event: any) => {
+    const handlePwChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValuePw(event.target.value)
 
         if (isSubmitted) {
@@ -53,39 +53,44 @@ export function TemplateCreateAccount() {
         }
     }
 
+    const validateForm = () => {
+        setErrorName(!valueName)
+        setErrorEmail(!valueEmail || !emailRegex.test(valueEmail))
+        setErrorProfession(!valueProfession)
+        setErrorPw(!valuePw)
+
+        return !errorName || !errorEmail || !errorProfession || !errorPw
+    }
+
     const handleCreateAccount = async () => {
         setIsSubmitted(true)
-        setErrorName(!valueName)
-        setErrorEmail(!valueEmail || !emailRegex.test(valueEmail));
-        setErrorProfession(!valueProfession);
-        setErrorPw(!valuePw);
 
-        if (!valueName || !emailRegex.test(valueEmail) || !valueProfession || !valuePw ) {
+        if (!validateForm()) {
+            console.log(validateForm())
             return false
         }
 
         try {
-            const response = await axios.post('http://localhost:4000/createAccount', {
+            const response = await api.post('createAccount', {
                 name: valueName,
                 profession: valueProfession,
                 email: valueEmail,
                 pw: valuePw,
-            });
-            
-            if (response.status === 200) {
-                console.log('Conexão ok!')
-            } else {
-                console.log('Erro de comunicação com o Banco!')
-            }
+            })
 
+            if (response.status === 200) {
+                setValueName('')
+                setValueEmail('')
+                setValueProfession('')
+                setValuePw('')
+                window.location.href = '/'
+            }
         } catch (error) {
             console.error('Erro ao enviar dados para o backend:', error)
         }
-        
-        window.location.href = '/'
     }
 
-    const redirectToLogin = () => { window.location.href = '/'}
+    const redirectToLogin = () => { window.location.href = '/' }
 
     return (
         <div className={styles.exampleContainer}>

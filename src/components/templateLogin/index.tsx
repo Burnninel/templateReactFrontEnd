@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import { useState, ChangeEvent } from 'react'
-import axios from "axios"
+import { api } from '../../services/api'
 
 import styles from './styles.module.scss'
 
@@ -15,6 +15,10 @@ export function TemplateLogin() {
 
     const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
         setValorEmail(event.target.value)
+
+        if (isSubmitted) {
+            setErrorEmail(!event.target.value)
+        }
     }
 
     const handlePwChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -28,21 +32,24 @@ export function TemplateLogin() {
     const handleSubmit = async () => {
         setIsSubmitted(true)
         try {
-            const response = await axios.post('http://localhost:4000/login', {
+            const response = await api.post('/login', {
                 email: valueEmail,
                 pw: valuePw,
             })
+
+            if (response.status === 401) {
+                console.error('Invalid credentials!')
+            }
+
             if (response.status === 200) {
                 localStorage.setItem('token', response.data)
                 window.location.href = '/account'
-                console.log('Login successful!')
-            } else {
-                console.log('Login unsuccessful')
             }
+
         } catch (error) {
             setErrorEmail(true)
             setErrorPw(true)
-            console.error('Erro ao enviar dados para o backend')
+            console.error('Erro ao enviar dados para o backend', error)
         }
     }
 

@@ -1,10 +1,15 @@
-import { motion } from "framer-motion"
 import { useEffect, useState, useCallback } from "react"
+import { motion } from "framer-motion"
 import { useDropzone } from 'react-dropzone'
+import { api } from '../../services/api'
 import axios from "axios"
 
-import styles from './styles.module.scss'
-import { IconEdit, IconConfirm, IconSearch, IconMap, IconImgProfile, IconEditImg, IconImg, IconUpdateImg, IconInvalidImg } from "../icons/icons"
+import { 
+  IconEdit, IconConfirm, IconSearch, IconMap, IconImgProfile, 
+  IconEditImg, IconImg, IconUpdateImg, IconInvalidImg 
+} from "../icons/icons"
+
+import styles from './styles.module.scss' 
 
 type User = {
   id: string,
@@ -26,28 +31,25 @@ type Address = {
 export function TemplateAccount() {
   const [userData, setUserData] = useState<User | null>(null)
 
-  const [email, setEmail] = useState('')
-  const [emailState, setEmailState] = useState(true)
+  const [email, setEmail] = useState<string>('')
+  const [emailState, setEmailState] = useState<boolean>(true)
 
-  const [phone, setPhone] = useState('')
-  const [phoneState, setPhoneState] = useState(true)
+  const [phone, setPhone] = useState<string>('')
+  const [phoneState, setPhoneState] = useState<boolean>(true)
 
-  const [cep, setCep] = useState('')
+  const [cep, setCep] = useState<string>('')
   const [address, setAddress] = useState<Address | null>(null)
 
-  const [editImg, setEditImg] = useState(false)
+  const [editImg, setEditImg] = useState<boolean>(false)
 
-  const [bgDropzone, setBgDropzone] = useState('#00000010')
+  const [dropzoneColor, setDropzoneColor] = useState<string>('#00000010')
 
-  const [fileName, setFileName] = useState('')
+  const [fileName, setFileName] = useState<string>('')
+  const [imgUrl, setImgUrl] = useState<string>('')
 
   const [acceptedFiles, setAcceptedFiles] = useState<File[]>([])
-
-  const [updateImg, setUpdateImg] = useState(false)
-
-  const [invalidImg, setInvalidImg] = useState(false)
-
-  const [imgUrl, setImgUrl] = useState('')
+  const [updateImg, setUpdateImg] = useState<boolean>(false)
+  const [invalidImg, setInvalidImg] = useState<boolean>(false)
 
   const config = {
     headers: {
@@ -56,7 +58,7 @@ export function TemplateAccount() {
   }
 
   useEffect(() => {
-    axios.get('http://localhost:4000/account', config)
+    api.get('account', config)
       .then(response => {
         setUserData(response.data)
         setEmail(response.data.email)
@@ -65,7 +67,6 @@ export function TemplateAccount() {
       })
       .catch(error => {
         console.error(error)
-        console.log('fodeu')
       })
   }, [localStorage.getItem('token')])
 
@@ -103,23 +104,23 @@ export function TemplateAccount() {
 
   const handleEmailConfirm = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/updateAccount', {
+      const response = await api.post('updateAccount', {
         email: email
       }, config)
 
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token)
-      } else {
-        console.log('Ops! Ocorreu um erro ao atualizar os dados.')
+      if (response.status === 401) {
+        console.error('Dados invalidos!')
+        return
       }
 
-      setPhoneState(true)
-
-    } catch {
-      console.error('Erro ao enviar dados para o backend')
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token)
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o email:', error)
+    } finally {
+      setEmailState(true)
     }
-
-    setEmailState(true)
   }
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,26 +132,28 @@ export function TemplateAccount() {
   }
 
   const handlePhoneConfirm = async () => {
+    if(!phone) {
+      setPhoneState(true)
+      return
+    }
+    
     try {
-      const config = {
-        headers: {
-          Authorization: `${localStorage.getItem('token')}`,
-        },
-      }
-
-      const response = await axios.post('http://localhost:4000/updateAccount', {
+      const response = await api.post('updateAccount', {
         phone: phone
       }, config)
 
-      if (response.status === 200) {
-        localStorage.setItem('token', response.data.token)
-      } else {
-        console.log('Ops! Ocorreu um erro ao atualizar os dados.')
+      if (response.status === 401) {
+        console.error('Dados invalidos!')
+        return
       }
 
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token)
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o telefone:', error)
+    } finally {
       setPhoneState(true)
-    } catch {
-      console.error('Erro ao enviar dados para o backend')
     }
   }
 
@@ -160,8 +163,8 @@ export function TemplateAccount() {
 
   const fetchCep = async () => {
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
-      setAddress(response.data)
+      const { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+      setAddress(data)
     } catch (error) {
       console.error('Erro ao buscar CEP:', error)
     }
@@ -175,11 +178,11 @@ export function TemplateAccount() {
         formData.append('avatar', file)
       })
 
-      const response = await axios.post(`http://localhost:4000/uploadPhoto`, formData, config)
+      const response = await api.post(`uploadPhoto`, formData, config)
 
       if (response.status == 200) {
         setUpdateImg(true)
-        setBgDropzone('#1cff247f')
+        setDropzoneColor('#1cff247f')
 
         setTimeout(() => {
           setEditImg(false)
@@ -191,7 +194,8 @@ export function TemplateAccount() {
       }
     } catch (error) {
       setInvalidImg(true)
-      setBgDropzone('#ff00003c')
+      setDropzoneColor('#ff00003c')
+      console.error('Erro ao atualizar a imagem:', error)
     }
   }
 
@@ -202,7 +206,7 @@ export function TemplateAccount() {
   }
 
   useEffect(() => {
-    setBgDropzone(dropzone.acceptedFiles.length > 0 ? '#1ba4ff41' : '#00000010')
+    setDropzoneColor(dropzone.acceptedFiles.length > 0 ? '#1ba4ff41' : '#00000010')
   }, [dropzone.acceptedFiles.length])
 
   const renderEditImg = () => {
@@ -211,7 +215,7 @@ export function TemplateAccount() {
         <div className={styles.imgUpdate}>
           <h3 className={styles.titleImgUpdate}>Alterar foto de perfil</h3>
 
-          <form className={styles.selectImg} style={{ backgroundColor: bgDropzone, borderColor: bgDropzone }} {...dropzone.getRootProps()}>
+          <form className={styles.selectImg} style={{ backgroundColor: dropzoneColor, borderColor: dropzoneColor }} {...dropzone.getRootProps()}>
             {!updateImg ?
               <>
                 {
@@ -248,11 +252,13 @@ export function TemplateAccount() {
   }
 
   const renderProfile = () => {
+    const { name, profession } = userData || {};
+
     return (
       <>
         <div className={styles.presentation}>
-          <h3 className={styles.userName}>{userData ? userData.name : 'Loading...'}</h3>
-          <h3 className={styles.userProfession}>{userData ? userData.profession : 'Loading...'}</h3>
+          <h3 className={styles.userName}>{userData ? name : 'Loading...'}</h3>
+          <h3 className={styles.userProfession}>{userData ? profession : 'Loading...'}</h3>
         </div>
 
         <div className={styles.contact}>
@@ -266,7 +272,7 @@ export function TemplateAccount() {
 
           <div className={styles.inputGroupContact}>
             <label className={styles.userEmail}>Telefone: </label>
-            <input className={styles.textInput} type="text" value={phone ? phone : 'Não cadastrado...'} disabled={phoneState} onChange={handlePhoneChange} />
+            <input className={styles.textInput} type="text" value={phone ? phone : ''} placeholder='Não cadastrado...' disabled={phoneState} onChange={handlePhoneChange} />
             <div className={styles.editInfo}>
               {phoneState ? <IconEdit onClick={handlePhoneState} /> : <IconConfirm onClick={handlePhoneConfirm} />}
             </div>
